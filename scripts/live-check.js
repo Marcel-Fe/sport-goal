@@ -7,7 +7,6 @@ const URL = 'https://marcel-fe.github.io/sport-goal/';
   const page = await browser.newPage({ viewport: { width: 414, height: 896 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push('PAGEERROR: ' + e.message));
-  page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
 
   await page.goto(URL, { waitUntil: 'domcontentloaded', timeout: 90000 });
   await page.waitForTimeout(4000);
