@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import TeamCrest from '@/components/TeamCrest';
+import Crest from '@/components/Crest';
 import { Card } from '@/components/primitives';
 import { C, F, R, S } from '@/constants/tokens';
 import { SPORTS } from '@/data/teams';
@@ -49,7 +49,7 @@ export default function More() {
             ) : (
               favorites.teamIds.map((id) => (
                 <Pressable key={id} onPress={() => router.push(`/team/${id}`)} style={styles.crestItem}>
-                  <TeamCrest teamId={id} size={44} />
+                  <Crest teamId={id} size={44} />
                 </Pressable>
               ))
             )}

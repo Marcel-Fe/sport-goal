@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import TeamCrest from '@/components/TeamCrest';
+import Crest from '@/components/Crest';
 import { C, F, R, S } from '@/constants/tokens';
 import { getNews } from '@/data/mock';
 import { getTeam } from '@/data/teams';
@@ -36,7 +36,7 @@ export default function NewsDetail() {
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={[styles.hero, { backgroundColor: c1 + '2A' }]}>
-          <TeamCrest teamId={item.teamId} size={64} />
+          <Crest teamId={item.teamId} size={64} />
         </View>
 
         {item.badge ? (

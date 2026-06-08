@@ -3,7 +3,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import TeamCrest from '@/components/TeamCrest';
+import Crest from '@/components/Crest';
 import { EventRow, NewsCompact, StandingsTable } from '@/components/cards';
 import { Card, SectionHeader } from '@/components/primitives';
 import { C, F, R, S } from '@/constants/tokens';
@@ -43,7 +43,7 @@ export default function TeamProfile() {
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={[styles.banner, { backgroundColor: c1 + '22', borderColor: c1 + '55' }]}>
-          <TeamCrest teamId={team.id} size={72} />
+          <Crest teamId={team.id} size={72} />
           <Text style={styles.name}>{team.name}</Text>
           {team.motto ? <Text style={styles.motto}>{team.motto}</Text> : null}
           <Text style={styles.league}>{team.league}{team.city ? ` · ${team.city}` : ''}</Text>

@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import RemoteBadge from '@/components/RemoteBadge';
-import TeamCrest from '@/components/TeamCrest';
+import Crest from '@/components/Crest';
 import { C, F, GLOW, R, S, SHADOW } from '@/constants/tokens';
 import { heroTilesFor, standingsForLeague, type HeroTile } from '@/data/mock';
 import { getTeam } from '@/data/teams';
@@ -33,7 +33,7 @@ function Tile({ tile }: { tile: HeroTile }) {
     <View style={styles.tile}>
       <View style={styles.tileIcon}>
         {tile.iconTeamId ? (
-          <TeamCrest teamId={tile.iconTeamId} size={20} />
+          <Crest teamId={tile.iconTeamId} size={20} />
         ) : (
           <Text style={[styles.tileEmoji, tile.danger && { color: C.accent }]}>{tile.icon}</Text>
         )}
@@ -122,7 +122,7 @@ export default function HeroCard({
             {badgeUri ? (
               <RemoteBadge uri={badgeUri} size={88} />
             ) : (
-              <TeamCrest teamId={team.id} size={88} />
+              <Crest teamId={team.id} size={88} />
             )}
           </View>
         </View>

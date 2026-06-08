@@ -18,6 +18,8 @@ import {
 } from '@/components/cards';
 import {
   LiveFixtureRow,
+  LiveNewsFeatured,
+  LiveNewsRow,
   LiveResultRow,
   LiveStandingsTable,
   LiveVideoCard,
@@ -36,9 +38,10 @@ import {
   TRENDING,
   VIDEOS,
 } from '@/data/mock';
-import { API_TEAM_NAME, bigBadge, sameTeam } from '@/data/live';
+import { API_TEAM_NAME, sameTeam } from '@/data/live';
+import { badgeUrl } from '@/data/badges-static';
 import { getTeam } from '@/data/teams';
-import { useLiveLeague, useTeamBadge } from '@/hooks/use-live';
+import { useClubNews, useLiveLeague } from '@/hooks/use-live';
 import { useFavorites } from '@/store/favorites';
 
 function AppHeader({ teamId }: { teamId?: string }) {
@@ -75,7 +78,8 @@ export default function Dashboard() {
 
   // Echte Live-Daten der Liga (Tabelle, Ergebnisse, Spiele) + echtes Logo
   const liveData = useLiveLeague(team?.league);
-  const heroBadge = useTeamBadge(teamId);
+  const clubNews = useClubNews(team?.name);
+  const heroBadge = badgeUrl(teamId);
   const apiName = teamId ? API_TEAM_NAME[teamId] : undefined;
   const liveRow = liveData.table?.find((r) => sameTeam(r.name, apiName));
 
@@ -125,7 +129,7 @@ export default function Dashboard() {
 
         <HeroCard
           teamId={teamId}
-          badgeUri={bigBadge(heroBadge)}
+          badgeUri={heroBadge}
           rank={liveRow?.rank}
           points={liveRow?.points}
         />
@@ -221,8 +225,26 @@ export default function Dashboard() {
           </View>
         ) : null}
 
-        {/* TOP NEWS (KI-Zusammenfassungen, Quelle verlinkt) */}
-        {featuredNews ? (
+        {/* TOP NEWS – echte Schlagzeilen (Quelle verlinkt), sonst KI-Zusammenfassungen */}
+        {clubNews.items && clubNews.items.length > 0 ? (
+          <View style={styles.section}>
+            <SectionHeader title={`NEWS · ${team?.name ?? ''}`} actionLabel={null} />
+            <Card>
+              <LiveNewsFeatured item={clubNews.items[0]} teamId={teamId} />
+              {clubNews.items.length > 1 ? <View style={styles.divider} /> : null}
+              <View style={{ gap: S.lg }}>
+                {clubNews.items.slice(1, 6).map((n, i) => (
+                  <View key={i}>
+                    {i > 0 ? <View style={styles.rowDivider} /> : null}
+                    <View style={{ paddingTop: i > 0 ? S.md : 0 }}>
+                      <LiveNewsRow item={n} teamId={teamId} />
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </Card>
+          </View>
+        ) : featuredNews ? (
           <View style={styles.section}>
             <SectionHeader title="TOP NEWS" onPress={() => router.push('/news')} />
             <Card>

@@ -67,6 +67,30 @@ export function useLiveLeague(league?: string): LiveLeagueState {
   return state;
 }
 
+import { fetchClubNews, type NewsHeadline } from '@/data/news';
+
+export function useClubNews(query?: string): { loading: boolean; items: NewsHeadline[] | null } {
+  const [state, setState] = useState<{ loading: boolean; items: NewsHeadline[] | null }>({
+    loading: false,
+    items: null,
+  });
+  useEffect(() => {
+    let alive = true;
+    if (!query) {
+      setState({ loading: false, items: null });
+      return;
+    }
+    setState({ loading: true, items: null });
+    fetchClubNews(query).then((items) => {
+      if (alive) setState({ loading: false, items });
+    });
+    return () => {
+      alive = false;
+    };
+  }, [query]);
+  return state;
+}
+
 export function useTeamBadge(teamId?: string): string | undefined {
   const [badge, setBadge] = useState<string | undefined>(undefined);
   useEffect(() => {

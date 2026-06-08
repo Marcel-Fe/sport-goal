@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import TeamCrest from '@/components/TeamCrest';
+import Crest from '@/components/Crest';
 import { Chip } from '@/components/primitives';
 import { C, F, R, S } from '@/constants/tokens';
 import { ATHLETES, SPORTS, TEAMS, type Sport } from '@/data/teams';
@@ -87,7 +87,7 @@ export default function Onboarding() {
                   style={[styles.tile, sel && styles.tileSelected]}
                   onPress={() => toggle(teamIds, t.id, setTeamIds)}
                 >
-                  <TeamCrest teamId={t.id} size={44} />
+                  <Crest teamId={t.id} size={44} />
                   <Text style={styles.tileName} numberOfLines={2}>
                     {t.name}
                   </Text>
@@ -108,7 +108,7 @@ export default function Onboarding() {
                   style={[styles.tile, sel && styles.tileSelected]}
                   onPress={() => toggle(playerIds, a.id, setPlayerIds)}
                 >
-                  <TeamCrest teamId={a.teamId} size={44} />
+                  <Crest teamId={a.teamId} size={44} />
                   <Text style={styles.tileName} numberOfLines={2}>
                     {a.name}
                   </Text>

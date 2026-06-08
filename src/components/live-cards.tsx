@@ -5,12 +5,46 @@
 import { Image } from 'expo-image';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import Crest from '@/components/Crest';
 import RemoteBadge from '@/components/RemoteBadge';
 import { C, F, R, S } from '@/constants/tokens';
 import { sameTeam, type LiveMatch, type LiveStanding } from '@/data/live';
+import type { NewsHeadline } from '@/data/news';
 
 function openUrl(url?: string) {
   if (url) Linking.openURL(url).catch(() => {});
+}
+
+// ------------------------------------------------------- Echte News (Schlagzeile + Link)
+export function LiveNewsFeatured({ item, teamId }: { item: NewsHeadline; teamId: string }) {
+  return (
+    <Pressable style={styles.newsFeatured} onPress={() => openUrl(item.link)}>
+      <View style={styles.newsHero}>
+        <Crest teamId={teamId} size={64} />
+      </View>
+      <View style={styles.newsSourceRow}>
+        <Text style={styles.newsSource}>{item.source}</Text>
+        <Text style={styles.newsAgo}>· {item.ago}</Text>
+      </View>
+      <Text style={styles.newsTitle} numberOfLines={3}>{item.title}</Text>
+      <Text style={styles.newsLink}>Zur Quelle ↗</Text>
+    </Pressable>
+  );
+}
+
+export function LiveNewsRow({ item, teamId }: { item: NewsHeadline; teamId: string }) {
+  return (
+    <Pressable style={styles.newsRow} onPress={() => openUrl(item.link)}>
+      <Crest teamId={teamId} size={44} />
+      <View style={{ flex: 1 }}>
+        <View style={styles.newsSourceRow}>
+          <Text style={styles.newsSource}>{item.source}</Text>
+          <Text style={styles.newsAgo}>· {item.ago}</Text>
+        </View>
+        <Text style={styles.newsRowTitle} numberOfLines={3}>{item.title}</Text>
+      </View>
+    </Pressable>
+  );
 }
 
 // ------------------------------------------------------- Tabelle (live)
@@ -60,50 +94,62 @@ export function LiveStandingsTable({
 // ------------------------------------------------------- Ergebnis (live)
 export function LiveResultRow({ item }: { item: LiveMatch }) {
   const hasVideo = !!item.video;
+  const single = !item.home;
   return (
-    <Pressable
-      style={styles.result}
-      disabled={!hasVideo}
-      onPress={() => openUrl(item.video)}
-    >
+    <Pressable style={styles.result} disabled={!hasVideo} onPress={() => openUrl(item.video)}>
       <View style={styles.resultDate}>
         <Text style={styles.resultDateText}>{item.dateLabel}</Text>
         {hasVideo ? <Text style={styles.playMini}>▶</Text> : null}
       </View>
-      <View style={{ flex: 1, gap: 4 }}>
-        <View style={styles.teamLine}>
-          <RemoteBadge uri={item.homeBadge} fallbackInitials={item.home} size={20} />
-          <Text style={styles.teamName} numberOfLines={1}>{item.home}</Text>
-          <Text style={styles.score}>{item.homeScore ?? '–'}</Text>
+      {single ? (
+        <View style={{ flex: 1 }}>
+          <Text style={styles.teamName} numberOfLines={2}>{item.event}</Text>
+          <Text style={styles.eventSub}>{item.league}</Text>
         </View>
-        <View style={styles.teamLine}>
-          <RemoteBadge uri={item.awayBadge} fallbackInitials={item.away} size={20} />
-          <Text style={styles.teamName} numberOfLines={1}>{item.away}</Text>
-          <Text style={styles.score}>{item.awayScore ?? '–'}</Text>
+      ) : (
+        <View style={{ flex: 1, gap: 4 }}>
+          <View style={styles.teamLine}>
+            <RemoteBadge uri={item.homeBadge} fallbackInitials={item.home} size={20} />
+            <Text style={styles.teamName} numberOfLines={1}>{item.home}</Text>
+            <Text style={styles.score}>{item.homeScore ?? '–'}</Text>
+          </View>
+          <View style={styles.teamLine}>
+            <RemoteBadge uri={item.awayBadge} fallbackInitials={item.away} size={20} />
+            <Text style={styles.teamName} numberOfLines={1}>{item.away}</Text>
+            <Text style={styles.score}>{item.awayScore ?? '–'}</Text>
+          </View>
         </View>
-      </View>
+      )}
     </Pressable>
   );
 }
 
 // ------------------------------------------------------- Fixture (live)
 export function LiveFixtureRow({ item }: { item: LiveMatch }) {
+  const single = !item.home;
   return (
     <View style={styles.result}>
       <View style={styles.resultDate}>
         <Text style={styles.resultDateText}>{item.dateLabel}</Text>
         <Text style={styles.resultTime}>{item.timeLabel}</Text>
       </View>
-      <View style={{ flex: 1, gap: 4 }}>
-        <View style={styles.teamLine}>
-          <RemoteBadge uri={item.homeBadge} fallbackInitials={item.home} size={20} />
-          <Text style={styles.teamName} numberOfLines={1}>{item.home}</Text>
+      {single ? (
+        <View style={{ flex: 1 }}>
+          <Text style={styles.teamName} numberOfLines={2}>{item.event}</Text>
+          <Text style={styles.eventSub}>{item.league}</Text>
         </View>
-        <View style={styles.teamLine}>
-          <RemoteBadge uri={item.awayBadge} fallbackInitials={item.away} size={20} />
-          <Text style={styles.teamName} numberOfLines={1}>{item.away}</Text>
+      ) : (
+        <View style={{ flex: 1, gap: 4 }}>
+          <View style={styles.teamLine}>
+            <RemoteBadge uri={item.homeBadge} fallbackInitials={item.home} size={20} />
+            <Text style={styles.teamName} numberOfLines={1}>{item.home}</Text>
+          </View>
+          <View style={styles.teamLine}>
+            <RemoteBadge uri={item.awayBadge} fallbackInitials={item.away} size={20} />
+            <Text style={styles.teamName} numberOfLines={1}>{item.away}</Text>
+          </View>
         </View>
-      </View>
+      )}
       <Text style={styles.bell}>🔔</Text>
     </View>
   );
@@ -124,7 +170,7 @@ export function LiveVideoCard({ item }: { item: LiveMatch }) {
         </View>
       </View>
       <Text style={styles.videoTitle} numberOfLines={2}>
-        {item.home} vs {item.away}
+        {item.home ? `${item.home} vs ${item.away}` : item.event}
       </Text>
       <Text style={styles.videoSub}>Highlights · {item.league}</Text>
     </Pressable>
@@ -156,6 +202,7 @@ const styles = StyleSheet.create({
   playMini: { color: C.accent, fontSize: 11, marginTop: 2 },
   teamLine: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   teamName: { color: C.text, fontSize: F.small, fontWeight: '700', flex: 1 },
+  eventSub: { color: C.textFaint, fontSize: F.tiny, marginTop: 2 },
   score: { color: C.text, fontSize: F.small, fontWeight: '900', minWidth: 18, textAlign: 'right' },
   bell: { fontSize: 16 },
 
@@ -181,4 +228,21 @@ const styles = StyleSheet.create({
   },
   videoTitle: { color: C.text, fontSize: F.small, fontWeight: '800', lineHeight: 18 },
   videoSub: { color: C.textFaint, fontSize: F.tiny },
+
+  newsFeatured: { gap: 6 },
+  newsHero: {
+    height: 130,
+    borderRadius: R.md,
+    backgroundColor: C.surfaceElevated,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  newsSourceRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  newsSource: { color: C.accent, fontSize: F.tiny, fontWeight: '800' },
+  newsAgo: { color: C.textFaint, fontSize: F.tiny },
+  newsTitle: { color: C.text, fontSize: F.h3, fontWeight: '800', lineHeight: 23 },
+  newsLink: { color: C.textDim, fontSize: F.small, fontWeight: '700' },
+  newsRow: { flexDirection: 'row', gap: S.md, alignItems: 'center' },
+  newsRowTitle: { color: C.text, fontSize: F.small, fontWeight: '700', lineHeight: 18, marginTop: 2 },
 });

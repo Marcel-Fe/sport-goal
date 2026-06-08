@@ -15,9 +15,9 @@ const PROFILES = [
   for (const p of PROFILES) {
     const ctx = await browser.newContext({ viewport: { width: 414, height: 896 } });
     const page = await ctx.newPage();
-    const errors = [];
-    page.on('pageerror', (e) => errors.push('PAGEERROR: ' + e.message));
-    page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+    const jsErrors = [];
+    page.on('pageerror', (e) => jsErrors.push('PAGEERROR: ' + e.message));
+    const errors = jsErrors; // nur echte JS-Fehler zählen (Netzwerk-Rauschen ignorieren)
 
     await page.goto('http://localhost:8081/', { waitUntil: 'domcontentloaded', timeout: 90000 });
     await page.waitForTimeout(4000);

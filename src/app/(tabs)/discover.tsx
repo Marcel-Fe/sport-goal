@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import TeamCrest from '@/components/TeamCrest';
+import Crest from '@/components/Crest';
 import { Chip } from '@/components/primitives';
 import { C, F, R, S } from '@/constants/tokens';
 import { SPORTS, TEAMS, type Sport } from '@/data/teams';
@@ -40,7 +40,7 @@ export default function Discover() {
       <ScrollView contentContainerStyle={styles.grid} showsVerticalScrollIndicator={false}>
         {teams.map((t) => (
           <Pressable key={t.id} style={styles.tile} onPress={() => router.push(`/team/${t.id}`)}>
-            <TeamCrest teamId={t.id} size={48} />
+            <Crest teamId={t.id} size={48} />
             <Text style={styles.tileName} numberOfLines={2}>
               {t.name}
             </Text>

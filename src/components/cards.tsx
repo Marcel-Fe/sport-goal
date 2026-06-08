@@ -5,7 +5,7 @@
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import TeamCrest from '@/components/TeamCrest';
+import Crest from '@/components/Crest';
 import { LiveDot, ProgressBar, StatusBadge, statusColor } from '@/components/primitives';
 import { C, F, R, S } from '@/constants/tokens';
 import type {
@@ -26,7 +26,7 @@ function Thumb({ teamId, height = 80, width }: { teamId: string; height?: number
   const [c1] = team?.colors ?? ['#22304A'];
   return (
     <View style={[styles.thumb, { height, width, backgroundColor: c1 + '33' }]}>
-      <TeamCrest teamId={teamId} size={Math.min(height, width ?? height) * 0.5} />
+      <Crest teamId={teamId} size={Math.min(height, width ?? height) * 0.5} />
     </View>
   );
 }
@@ -137,7 +137,7 @@ export function TransferRow({ item }: { item: Transfer }) {
   const moving = item.fromTeamId !== item.toTeamId;
   return (
     <View style={styles.transferRow}>
-      <TeamCrest teamId={item.toTeamId} size={36} />
+      <Crest teamId={item.toTeamId} size={36} />
       <View style={{ flex: 1 }}>
         <Text style={styles.transferPlayer}>{item.player}</Text>
         <Text style={styles.timeAgo}>
@@ -169,14 +169,14 @@ export function LiveRow({ item }: { item: LiveEvent }) {
       </View>
       <View style={styles.liveTeams}>
         <View style={styles.liveTeam}>
-          <TeamCrest teamId={item.homeId} size={22} />
+          <Crest teamId={item.homeId} size={22} />
           <Text style={styles.liveTeamName} numberOfLines={1}>
             {home?.initials}
           </Text>
           <Text style={styles.liveScore}>{item.homeScore}</Text>
         </View>
         <View style={styles.liveTeam}>
-          <TeamCrest teamId={item.awayId} size={22} />
+          <Crest teamId={item.awayId} size={22} />
           <Text style={styles.liveTeamName} numberOfLines={1}>
             {away?.initials}
           </Text>
@@ -215,13 +215,13 @@ export function MatchRow({ item }: { item: Match }) {
       </View>
       <View style={styles.matchTeams}>
         <View style={styles.matchTeamLine}>
-          <TeamCrest teamId={item.homeId} size={20} />
+          <Crest teamId={item.homeId} size={20} />
           <Text style={styles.matchTeamName} numberOfLines={1}>
             {home?.name}
           </Text>
         </View>
         <View style={styles.matchTeamLine}>
-          <TeamCrest teamId={item.awayId} size={20} />
+          <Crest teamId={item.awayId} size={20} />
           <Text style={styles.matchTeamName} numberOfLines={1}>
             {away?.name}
           </Text>
@@ -247,17 +247,17 @@ export function EventRow({ item }: { item: UpcomingEvent }) {
         {opp ? (
           <>
             <View style={styles.matchTeamLine}>
-              <TeamCrest teamId={item.teamId} size={20} />
+              <Crest teamId={item.teamId} size={20} />
               <Text style={styles.matchTeamName} numberOfLines={1}>{team?.name}</Text>
             </View>
             <View style={styles.matchTeamLine}>
-              <TeamCrest teamId={item.opponentId!} size={20} />
+              <Crest teamId={item.opponentId!} size={20} />
               <Text style={styles.matchTeamName} numberOfLines={1}>{opp.name}</Text>
             </View>
           </>
         ) : (
           <View style={styles.matchTeamLine}>
-            <TeamCrest teamId={item.teamId} size={20} />
+            <Crest teamId={item.teamId} size={20} />
             <Text style={styles.matchTeamName} numberOfLines={1}>{item.title}</Text>
           </View>
         )}
@@ -295,7 +295,7 @@ export function StandingsTable({
           <View key={row.teamId} style={[styles.tableRow, hl && styles.tableRowHl]}>
             <Text style={[styles.td, { width: 24 }, hl && styles.tdHl]}>{row.pos}</Text>
             <View style={styles.tableTeam}>
-              <TeamCrest teamId={row.teamId} size={22} />
+              <Crest teamId={row.teamId} size={22} />
               <Text style={[styles.tableTeamName, hl && styles.tdHl]} numberOfLines={1}>
                 {team?.name}
               </Text>

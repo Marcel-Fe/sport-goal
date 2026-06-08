@@ -14,13 +14,14 @@ const KEY = '3'; // öffentlicher Test-Key (kostenlos)
 const BASE = `https://www.thesportsdb.com/api/v1/json/${KEY}`;
 const CACHE_TTL_MS = 15 * 60 * 1000; // 15 Min
 
-/** Meine Liga-Namen → TheSportsDB Liga-ID + aktuelle Saison. */
-export const LIVE_LEAGUES: Record<string, { id: string; season: string }> = {
-  Bundesliga: { id: '4331', season: '2025-2026' },
-  'Premier League': { id: '4328', season: '2025-2026' },
-  'La Liga': { id: '4335', season: '2025-2026' },
-  NBA: { id: '4387', season: '2025-2026' },
-  NFL: { id: '4391', season: '2025' },
+/** Meine Liga-Namen → TheSportsDB Liga-ID + Saison. hasTable=false bei Einzelsport. */
+export const LIVE_LEAGUES: Record<string, { id: string; season: string; hasTable: boolean }> = {
+  Bundesliga: { id: '4331', season: '2025-2026', hasTable: true },
+  'Premier League': { id: '4328', season: '2025-2026', hasTable: true },
+  'La Liga': { id: '4335', season: '2025-2026', hasTable: true },
+  NBA: { id: '4387', season: '2025-2026', hasTable: true },
+  NFL: { id: '4391', season: '2025', hasTable: true },
+  'Formel 1': { id: '4370', season: '2025-2026', hasTable: false },
 };
 
 export function leagueSupported(league?: string): boolean {
@@ -60,8 +61,9 @@ export interface LiveMatch {
   ts?: string;
   dateLabel: string;
   timeLabel: string;
-  home: string;
-  away: string;
+  home?: string;
+  away?: string;
+  event?: string; // Einzel-Event (F1-Rennen, Tennis-Match) ohne Heim/Gast
   homeBadge?: string;
   awayBadge?: string;
   homeScore?: string;
@@ -120,7 +122,7 @@ function fmtDate(ts?: string): { dateLabel: string; timeLabel: string } {
 
 export async function getTable(league: string): Promise<LiveStanding[] | null> {
   const cfg = LIVE_LEAGUES[league];
-  if (!cfg) return null;
+  if (!cfg || !cfg.hasTable) return null;
   const data = await cached<{ table?: any[] }>(
     `${BASE}/lookuptable.php?l=${cfg.id}&s=${cfg.season}`,
   );
@@ -141,8 +143,9 @@ function mapEvents(events: any[] | undefined, finished: boolean): LiveMatch[] {
     id: e.idEvent,
     ts: e.strTimestamp,
     ...fmtDate(e.strTimestamp),
-    home: e.strHomeTeam,
-    away: e.strAwayTeam,
+    home: e.strHomeTeam || undefined,
+    away: e.strAwayTeam || undefined,
+    event: e.strEvent || undefined,
     homeBadge: e.strHomeTeamBadge,
     awayBadge: e.strAwayTeamBadge,
     homeScore: e.intHomeScore ?? undefined,
