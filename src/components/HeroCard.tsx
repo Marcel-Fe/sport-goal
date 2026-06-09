@@ -50,11 +50,13 @@ export default function HeroCard({
   badgeUri,
   rank,
   points,
+  showTiles = true,
 }: {
   teamId: string;
   badgeUri?: string;
   rank?: number;
   points?: number;
+  showTiles?: boolean;
 }) {
   const team = getTeam(teamId);
   if (!team) return null;
@@ -129,11 +131,13 @@ export default function HeroCard({
       </View>
 
       {/* Info-Kacheln (datengetrieben pro Team/Sportart) */}
-      <View style={styles.tiles}>
-        {tiles.map((t, i) => (
-          <Tile key={i} tile={t} />
-        ))}
-      </View>
+      {showTiles ? (
+        <View style={styles.tiles}>
+          {tiles.map((t, i) => (
+            <Tile key={i} tile={t} />
+          ))}
+        </View>
+      ) : null}
     </View>
   );
 }

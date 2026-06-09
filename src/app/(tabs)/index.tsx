@@ -4,6 +4,7 @@ import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-na
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Frame from '@/components/Frame';
+import ClubBento from '@/components/ClubBento';
 import HeadlineCarousel from '@/components/HeadlineCarousel';
 import HeroCard from '@/components/HeroCard';
 import Ticker from '@/components/Ticker';
@@ -32,6 +33,7 @@ import { C, F, R, S } from '@/constants/tokens';
 import {
   byFavorites,
   EVENTS,
+  heroTilesFor,
   LIVE_EVENTS,
   NEWS,
   SHORTS,
@@ -88,6 +90,11 @@ export default function Dashboard() {
   const heroBadge = badgeUrl(teamId);
   const apiName = teamId ? API_TEAM_NAME[teamId] : undefined;
   const liveRow = liveData.table?.find((r) => sameTeam(r.name, apiName));
+
+  // Bento-Daten (echt wo möglich, sonst Demo) + Vereinsfarbe
+  const mockStanding = standingsForLeague(team?.league).find((s) => s.teamId === teamId);
+  const nextTile = heroTilesFor(teamId)[0];
+  const clubColor = team?.colors?.[0] ?? C.accent;
 
   // Demo-Feeds nach Favoriten
   const news = byFavorites(NEWS, sports, teamIds);
@@ -146,6 +153,19 @@ export default function Dashboard() {
           badgeUri={heroBadge}
           rank={liveRow?.rank}
           points={liveRow?.points}
+          showTiles={false}
+        />
+
+        {/* Bento-Grid: Schlüsselzahlen in Vereinsfarbe */}
+        <ClubBento
+          primary={clubColor}
+          rank={liveRow?.rank ?? mockStanding?.pos}
+          points={liveRow?.points ?? mockStanding?.points}
+          played={liveRow?.played}
+          form={liveRow?.form}
+          nextValue={nextTile?.value ?? '—'}
+          nextSub={nextTile?.sub ?? 'kein Termin'}
+          league={team?.league}
         />
 
         {/* Rund um den Verein: offizieller Fanshop (nur Link) */}
