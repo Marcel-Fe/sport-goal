@@ -78,7 +78,7 @@ export default function Dashboard() {
 
   // Echte Live-Daten der Liga (Tabelle, Ergebnisse, Spiele) + echtes Logo
   const liveData = useLiveLeague(team?.league);
-  const clubNews = useClubNews(team?.name);
+  const clubNews = useClubNews(teamId, team?.name);
   const heroBadge = badgeUrl(teamId);
   const apiName = teamId ? API_TEAM_NAME[teamId] : undefined;
   const liveRow = liveData.table?.find((r) => sameTeam(r.name, apiName));

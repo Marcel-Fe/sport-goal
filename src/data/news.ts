@@ -88,7 +88,49 @@ async function fetchVia(p: { url: string; json: boolean }): Promise<string | nul
   }
 }
 
-export async function fetchClubNews(query: string): Promise<NewsHeadline[] | null> {
+/** Basis-Pfad der App (z. B. /sport-goal) für same-origin Datendateien. */
+function siteBase(): string {
+  if (typeof window !== 'undefined' && window.location) {
+    const parts = window.location.pathname.split('/');
+    if (parts[1]) return '/' + parts[1];
+  }
+  return '';
+}
+
+/** Frische News aus der vom Cron erzeugten festen Datei (same-origin, zuverlässig). */
+async function fetchStatic(teamId: string): Promise<NewsHeadline[] | null> {
+  try {
+    const ctrl = new AbortController();
+    const to = setTimeout(() => ctrl.abort(), 6000);
+    const res = await fetch(`${siteBase()}/news/${teamId}.json?t=${Date.now()}`, {
+      signal: ctrl.signal,
+    });
+    clearTimeout(to);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const items = (data?.items ?? []).map((it: any) => ({
+      title: it.title,
+      link: it.link,
+      source: it.source ?? 'Quelle',
+      pub: it.pub ?? Date.now(),
+      ago: ago(it.pub ?? Date.now()),
+    }));
+    return items.length ? items : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchClubNews(
+  query: string,
+  teamId?: string,
+): Promise<NewsHeadline[] | null> {
+  // 1) Beste Quelle: feste, vom Cron frisch gehaltene Datei (same-origin, kein CORS)
+  if (teamId) {
+    const stat = await fetchStatic(teamId);
+    if (stat) return stat;
+  }
+
   const target = `https://news.google.com/rss/search?q=${encodeURIComponent(
     query,
   )}&hl=de&gl=DE&ceid=DE:de`;

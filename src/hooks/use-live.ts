@@ -69,25 +69,28 @@ export function useLiveLeague(league?: string): LiveLeagueState {
 
 import { fetchClubNews, type NewsHeadline } from '@/data/news';
 
-export function useClubNews(query?: string): { loading: boolean; items: NewsHeadline[] | null } {
+export function useClubNews(
+  teamId?: string,
+  query?: string,
+): { loading: boolean; items: NewsHeadline[] | null } {
   const [state, setState] = useState<{ loading: boolean; items: NewsHeadline[] | null }>({
     loading: false,
     items: null,
   });
   useEffect(() => {
     let alive = true;
-    if (!query) {
+    if (!query && !teamId) {
       setState({ loading: false, items: null });
       return;
     }
     setState({ loading: true, items: null });
-    fetchClubNews(query).then((items) => {
+    fetchClubNews(query ?? '', teamId).then((items) => {
       if (alive) setState({ loading: false, items });
     });
     return () => {
       alive = false;
     };
-  }, [query]);
+  }, [teamId, query]);
   return state;
 }
 
