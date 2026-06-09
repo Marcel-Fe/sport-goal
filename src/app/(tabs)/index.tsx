@@ -100,7 +100,11 @@ export default function Dashboard() {
   // Spielfreie Zeit (keine kommenden Spiele): ehrliches Label, kein Live-Punkt.
   const hasUpcoming = fixtures.length > 0;
   const resultsTitle = hasUpcoming ? 'AKTUELLE ERGEBNISSE' : 'LETZTE ERGEBNISSE';
-  const highlights = results.filter((m) => m.video || m.thumb).slice(0, 8);
+  // Highlights nur vom eigenen Verein (sonst fremde Liga-Spiele) – Fallback: Demo-Videos.
+  const teamResults = apiName
+    ? results.filter((m) => sameTeam(m.home ?? '', apiName) || sameTeam(m.away ?? '', apiName))
+    : results;
+  const highlights = teamResults.filter((m) => m.video || m.thumb).slice(0, 8);
   const demoEvents = byFavorites(EVENTS, sports, teamIds).slice(0, 6);
 
   const liveScore = (e: (typeof LIVE_EVENTS)[number]) =>
