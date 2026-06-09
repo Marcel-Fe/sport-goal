@@ -19,8 +19,11 @@ export interface NewsHeadline {
 function proxies(target: string): { url: string; json: boolean }[] {
   const enc = encodeURIComponent(target);
   return [
+    // corsproxy.io funktioniert im echten Browser (sendet Origin-Header)
+    { url: `https://corsproxy.io/?url=${enc}`, json: false },
     { url: `https://api.allorigins.win/get?url=${enc}`, json: true },
     { url: `https://api.codetabs.com/v1/proxy/?quest=${enc}`, json: false },
+    { url: `https://thingproxy.freeboard.io/fetch/${target}`, json: false },
     { url: `https://api.allorigins.win/raw?url=${enc}`, json: false },
   ];
 }
