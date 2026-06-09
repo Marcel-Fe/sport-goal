@@ -43,7 +43,7 @@ import {
   TRENDING,
   VIDEOS,
 } from '@/data/mock';
-import { API_TEAM_NAME, sameTeam } from '@/data/live';
+import { API_TEAM_NAME, deriveForm, sameTeam } from '@/data/live';
 import { badgeUrl } from '@/data/badges-static';
 import { shopUrl } from '@/data/shops';
 import { getTeam } from '@/data/teams';
@@ -95,6 +95,8 @@ export default function Dashboard() {
   const mockStanding = standingsForLeague(team?.league).find((s) => s.teamId === teamId);
   const nextTile = heroTilesFor(teamId)[0];
   const clubColor = team?.colors?.[0] ?? C.accent;
+  // Form: echtes API-Feld, sonst aus den letzten echten Spielen berechnet.
+  const clubForm = liveRow?.form || deriveForm(liveData.past, apiName);
 
   // Demo-Feeds nach Favoriten
   const news = byFavorites(NEWS, sports, teamIds);
@@ -162,7 +164,7 @@ export default function Dashboard() {
           rank={liveRow?.rank ?? mockStanding?.pos}
           points={liveRow?.points ?? mockStanding?.points}
           played={liveRow?.played}
-          form={liveRow?.form}
+          form={clubForm}
           nextValue={nextTile?.value ?? '—'}
           nextSub={nextTile?.sub ?? 'kein Termin'}
           league={team?.league}

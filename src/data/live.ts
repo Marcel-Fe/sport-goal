@@ -173,6 +173,36 @@ export async function getNext(league: string): Promise<LiveMatch[] | null> {
   return mapEvents(data.events, false);
 }
 
+/**
+ * Form (W/D/L) aus den echten letzten Spielen eines Teams berechnen – Fallback,
+ * wenn die API kein strForm liefert. Reihenfolge: ältestes → neuestes (rechts neu).
+ */
+export function deriveForm(
+  past: LiveMatch[] | null,
+  apiName?: string,
+  max = 5,
+): string {
+  if (!past || !apiName) return '';
+  const valid = (s?: string) => s != null && s !== '' && !isNaN(Number(s));
+  const mine = past.filter(
+    (m) =>
+      (sameTeam(m.home ?? '', apiName) || sameTeam(m.away ?? '', apiName)) &&
+      valid(m.homeScore) &&
+      valid(m.awayScore),
+  );
+  // past ist neueste-zuerst → letzte `max` Spiele, dann chronologisch drehen
+  return mine
+    .slice(0, max)
+    .reverse()
+    .map((m) => {
+      const home = sameTeam(m.home ?? '', apiName);
+      const gf = Number(home ? m.homeScore : m.awayScore);
+      const ga = Number(home ? m.awayScore : m.homeScore);
+      return gf > ga ? 'W' : gf < ga ? 'L' : 'D';
+    })
+    .join('');
+}
+
 /** Echtes Logo zu einem Team-Namen (für Hero/Listen). */
 export async function getTeamBadge(apiName: string): Promise<string | undefined> {
   const data = await cached<{ teams?: any[] }>(
