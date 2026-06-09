@@ -9,6 +9,7 @@ import Crest from '@/components/Crest';
 import RemoteBadge from '@/components/RemoteBadge';
 import { C, F, R, S } from '@/constants/tokens';
 import { sameTeam, type LiveMatch, type LiveStanding } from '@/data/live';
+import { fanartUrl } from '@/data/images-static';
 import type { NewsHeadline } from '@/data/news';
 
 function openUrl(url?: string) {
@@ -17,9 +18,19 @@ function openUrl(url?: string) {
 
 // ------------------------------------------------------- Echte News (Schlagzeile, Anzeige)
 export function LiveNewsFeatured({ item, teamId }: { item: NewsHeadline; teamId: string }) {
+  const fanart = fanartUrl(teamId);
   return (
     <View style={styles.newsFeatured}>
       <View style={styles.newsHero}>
+        {fanart ? (
+          <Image
+            source={{ uri: fanart }}
+            style={StyleSheet.absoluteFill}
+            contentFit="cover"
+            transition={200}
+          />
+        ) : null}
+        {fanart ? <View style={styles.newsHeroScrim} /> : null}
         <Crest teamId={teamId} size={64} />
       </View>
       <View style={styles.newsSourceRow}>
@@ -236,7 +247,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 4,
+    overflow: 'hidden',
   },
+  newsHeroScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.42)' },
   newsSourceRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   newsSource: { color: C.accent, fontSize: F.tiny, fontWeight: '800' },
   newsAgo: { color: C.textFaint, fontSize: F.tiny },
