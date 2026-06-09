@@ -121,6 +121,11 @@ async function fetchStatic(teamId: string): Promise<NewsHeadline[] | null> {
   }
 }
 
+/** Fester, same-origin Feed nach id (z. B. 'all', 'transfers'). Kein CORS, immer frisch. */
+export async function fetchFeed(id: string): Promise<NewsHeadline[] | null> {
+  return fetchStatic(id);
+}
+
 export async function fetchClubNews(
   query: string,
   teamId?: string,

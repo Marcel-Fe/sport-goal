@@ -44,13 +44,16 @@ function parse(xml) {
   return out.slice(0, 10);
 }
 
+async function fetchFeed(q) {
+  const url = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=de&gl=DE&ceid=DE:de`;
+  const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 SportGoalBot' } });
+  return parse(await res.text());
+}
+
 let ok = 0;
 for (const [id, q] of Object.entries(QUERY)) {
-  const url = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=de&gl=DE&ceid=DE:de`;
   try {
-    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 SportGoalBot' } });
-    const xml = await res.text();
-    const items = parse(xml);
+    const items = await fetchFeed(q);
     if (items.length) {
       writeFileSync(resolve(OUT, `${id}.json`), JSON.stringify({ updated: Date.now(), items }));
       ok++;
@@ -62,4 +65,24 @@ for (const [id, q] of Object.entries(QUERY)) {
   }
   await sleep(300);
 }
-console.log(`News geschrieben: ${ok}/${Object.keys(QUERY).length}`);
+
+// Zusatz-Feeds: Sportwelt-Ticker (oben) + Transferticker
+const EXTRA = {
+  all: 'Sport Schlagzeilen',
+  transfers: 'Fußball Transfer Gerücht',
+};
+for (const [id, q] of Object.entries(EXTRA)) {
+  try {
+    const items = await fetchFeed(q);
+    if (items.length) {
+      writeFileSync(resolve(OUT, `${id}.json`), JSON.stringify({ updated: Date.now(), items }));
+      ok++;
+    } else {
+      console.error('leer:', id);
+    }
+  } catch (e) {
+    console.error('fehler:', id, e.message);
+  }
+  await sleep(300);
+}
+console.log(`News geschrieben: ${ok}/${Object.keys(QUERY).length + Object.keys(EXTRA).length}`);

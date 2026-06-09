@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Frame from '@/components/Frame';
 import HeroCard from '@/components/HeroCard';
+import Ticker from '@/components/Ticker';
 import {
   EventRow,
   LiveRow,
@@ -43,7 +44,7 @@ import { API_TEAM_NAME, sameTeam } from '@/data/live';
 import { badgeUrl } from '@/data/badges-static';
 import { shopUrl } from '@/data/shops';
 import { getTeam } from '@/data/teams';
-import { useClubNews, useLiveLeague } from '@/hooks/use-live';
+import { useClubNews, useFeed, useLiveLeague } from '@/hooks/use-live';
 import { useFavorites } from '@/store/favorites';
 
 function AppHeader({ teamId }: { teamId?: string }) {
@@ -81,6 +82,8 @@ export default function Dashboard() {
   // Echte Live-Daten der Liga (Tabelle, Ergebnisse, Spiele) + echtes Logo
   const liveData = useLiveLeague(team?.league);
   const clubNews = useClubNews(teamId, team?.name);
+  const worldNews = useFeed('all');
+  const transferNews = useFeed('transfers');
   const heroBadge = badgeUrl(teamId);
   const apiName = teamId ? API_TEAM_NAME[teamId] : undefined;
   const liveRow = liveData.table?.find((r) => sameTeam(r.name, apiName));
@@ -127,6 +130,10 @@ export default function Dashboard() {
       />
       <Frame>
       <AppHeader teamId={teamId} />
+      {/* Sportwelt-Ticker ganz oben (alle Sportarten, durchlaufend) */}
+      {worldNews.items && worldNews.items.length > 0 ? (
+        <Ticker items={worldNews.items} label="SPORT" />
+      ) : null}
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.searchBar}>
           <Text style={styles.searchIcon}>🔍</Text>
@@ -296,8 +303,15 @@ export default function Dashboard() {
           </View>
         ) : null}
 
-        {/* TRANSFER / TRADE RADAR */}
-        {cfg.showTransfers && transfers.length > 0 ? (
+        {/* TRANSFERGERÜCHTE – echter Ticker (sonst Demo-Liste) */}
+        {transferNews.items && transferNews.items.length > 0 ? (
+          <View style={styles.section}>
+            <SectionHeader title="TRANSFERGERÜCHTE" actionLabel={null} />
+            <View style={styles.tickerBox}>
+              <Ticker items={transferNews.items} label="TRANSFERS" />
+            </View>
+          </View>
+        ) : cfg.showTransfers && transfers.length > 0 ? (
           <View style={styles.section}>
             <SectionHeader title={cfg.transfersTitle} />
             <Card>
@@ -424,6 +438,7 @@ const styles = StyleSheet.create({
   shopTitle: { color: C.text, fontSize: F.body, fontWeight: '800' },
   shopSub: { color: C.textFaint, fontSize: F.small, marginTop: 1 },
   shopChevron: { color: C.textDim, fontSize: 22, fontWeight: '800' },
+  tickerBox: { borderRadius: R.md, overflow: 'hidden', borderWidth: 1, borderColor: C.border },
   section: { gap: 0 },
   sectionTitle: { color: C.text, fontSize: F.h3, fontWeight: '800', letterSpacing: 0.2 },
   liveHeader: {

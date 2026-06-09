@@ -139,6 +139,26 @@ export function useFavoritesNews(
   return state;
 }
 
+import { fetchFeed } from '@/data/news';
+
+/** Lädt einen festen, same-origin Feed nach id (z. B. 'all', 'transfers'). */
+export function useFeed(id: string): { loading: boolean; items: NewsHeadline[] | null } {
+  const [state, setState] = useState<{ loading: boolean; items: NewsHeadline[] | null }>({
+    loading: true,
+    items: null,
+  });
+  useEffect(() => {
+    let alive = true;
+    fetchFeed(id).then((items) => {
+      if (alive) setState({ loading: false, items });
+    });
+    return () => {
+      alive = false;
+    };
+  }, [id]);
+  return state;
+}
+
 export function useTeamBadge(teamId?: string): string | undefined {
   const [badge, setBadge] = useState<string | undefined>(undefined);
   useEffect(() => {
