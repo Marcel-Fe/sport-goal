@@ -5,7 +5,7 @@
  */
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { C, F, R, S } from '@/constants/tokens';
 import type { NewsHeadline } from '@/data/news';
@@ -45,7 +45,7 @@ export default function HeadlineCarousel({
         </Text>
       </View>
 
-      <Pressable style={styles.body} onPress={() => go(1)}>
+      <Pressable style={styles.body} onPress={() => it.link && Linking.openURL(it.link).catch(() => {})}>
         <View style={styles.srcRow}>
           <Text style={styles.src}>{it.source}</Text>
           <Text style={styles.ago}>· {it.ago}</Text>

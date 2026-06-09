@@ -20,7 +20,7 @@ function openUrl(url?: string) {
 export function LiveNewsFeatured({ item, teamId }: { item: NewsHeadline; teamId: string }) {
   const fanart = fanartUrl(teamId);
   return (
-    <View style={styles.newsFeatured}>
+    <Pressable style={styles.newsFeatured} onPress={() => openUrl(item.link)}>
       <View style={styles.newsHero}>
         {fanart ? (
           <Image
@@ -38,13 +38,13 @@ export function LiveNewsFeatured({ item, teamId }: { item: NewsHeadline; teamId:
         <Text style={styles.newsAgo}>· {item.ago}</Text>
       </View>
       <Text style={styles.newsTitle} numberOfLines={3}>{item.title}</Text>
-    </View>
+    </Pressable>
   );
 }
 
 export function LiveNewsRow({ item, teamId }: { item: NewsHeadline; teamId: string }) {
   return (
-    <View style={styles.newsRow}>
+    <Pressable style={styles.newsRow} onPress={() => openUrl(item.link)}>
       <Crest teamId={teamId} size={44} />
       <View style={{ flex: 1 }}>
         <View style={styles.newsSourceRow}>
@@ -53,7 +53,7 @@ export function LiveNewsRow({ item, teamId }: { item: NewsHeadline; teamId: stri
         </View>
         <Text style={styles.newsRowTitle} numberOfLines={3}>{item.title}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
