@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Frame from '@/components/Frame';
@@ -41,6 +41,7 @@ import {
 } from '@/data/mock';
 import { API_TEAM_NAME, sameTeam } from '@/data/live';
 import { badgeUrl } from '@/data/badges-static';
+import { shopUrl } from '@/data/shops';
 import { getTeam } from '@/data/teams';
 import { useClubNews, useLiveLeague } from '@/hooks/use-live';
 import { useFavorites } from '@/store/favorites';
@@ -138,6 +139,21 @@ export default function Dashboard() {
           rank={liveRow?.rank}
           points={liveRow?.points}
         />
+
+        {/* Rund um den Verein: offizieller Fanshop (nur Link) */}
+        <Pressable
+          style={styles.shopLink}
+          onPress={() => Linking.openURL(shopUrl(teamId)).catch(() => {})}
+        >
+          <Text style={styles.shopIcon}>🛒</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.shopTitle}>Offizieller Fanshop</Text>
+            <Text style={styles.shopSub} numberOfLines={1}>
+              Trikots & Fanartikel {team ? `von ${team.name}` : ''}
+            </Text>
+          </View>
+          <Text style={styles.shopChevron}>›</Text>
+        </Pressable>
 
         {/* AKTUELLE ERGEBNISSE (echt) – sonst Demo-Live */}
         {results.length > 0 ? (
@@ -393,6 +409,21 @@ const styles = StyleSheet.create({
   },
   searchIcon: { fontSize: 15 },
   searchPlaceholder: { color: C.textFaint, fontSize: F.body },
+  shopLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: S.md,
+    backgroundColor: C.surfaceAlt,
+    borderRadius: R.lg,
+    borderWidth: 1,
+    borderColor: C.border,
+    paddingHorizontal: S.lg,
+    paddingVertical: S.md,
+  },
+  shopIcon: { fontSize: 22 },
+  shopTitle: { color: C.text, fontSize: F.body, fontWeight: '800' },
+  shopSub: { color: C.textFaint, fontSize: F.small, marginTop: 1 },
+  shopChevron: { color: C.textDim, fontSize: 22, fontWeight: '800' },
   section: { gap: 0 },
   sectionTitle: { color: C.text, fontSize: F.h3, fontWeight: '800', letterSpacing: 0.2 },
   liveHeader: {
