@@ -94,6 +94,51 @@ export function useClubNews(
   return state;
 }
 
+import { getTeam } from '@/data/teams';
+
+export interface FavNewsItem extends NewsHeadline {
+  teamId: string;
+}
+
+/**
+ * Lädt echte News für alle Favoriten parallel, taggt jede Schlagzeile mit ihrem
+ * teamId (für das richtige Logo) und mischt sie nach Aktualität. Fallback = null.
+ */
+export function useFavoritesNews(
+  teamIds: string[],
+): { loading: boolean; items: FavNewsItem[] | null } {
+  const [state, setState] = useState<{ loading: boolean; items: FavNewsItem[] | null }>({
+    loading: false,
+    items: null,
+  });
+  const key = teamIds.join(',');
+  useEffect(() => {
+    let alive = true;
+    if (!teamIds.length) {
+      setState({ loading: false, items: null });
+      return;
+    }
+    setState({ loading: true, items: null });
+    (async () => {
+      const lists = await Promise.all(
+        teamIds.map(async (id) => {
+          const items = await fetchClubNews(getTeam(id)?.name ?? '', id);
+          return (items ?? []).map((it) => ({ ...it, teamId: id }));
+        }),
+      );
+      if (!alive) return;
+      const merged = lists.flat().sort((a, b) => b.pub - a.pub);
+      setState({ loading: false, items: merged.length ? merged : null });
+    })();
+    return () => {
+      alive = false;
+    };
+    // key fasst die Favoritenliste stabil zusammen
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+  return state;
+}
+
 export function useTeamBadge(teamId?: string): string | undefined {
   const [badge, setBadge] = useState<string | undefined>(undefined);
   useEffect(() => {
