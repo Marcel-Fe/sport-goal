@@ -93,6 +93,9 @@ export default function Dashboard() {
   // Echte Ergebnisse / Spiele / Highlights (sonst Demo)
   const results = liveData.past ?? [];
   const fixtures = liveData.next ?? [];
+  // Spielfreie Zeit (keine kommenden Spiele): ehrliches Label, kein Live-Punkt.
+  const hasUpcoming = fixtures.length > 0;
+  const resultsTitle = hasUpcoming ? 'AKTUELLE ERGEBNISSE' : 'LETZTE ERGEBNISSE';
   const highlights = results.filter((m) => m.video || m.thumb).slice(0, 8);
   const demoEvents = byFavorites(EVENTS, sports, teamIds).slice(0, 6);
 
@@ -141,8 +144,8 @@ export default function Dashboard() {
           <View style={styles.section}>
             <View style={styles.liveHeader}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <Text style={styles.sectionTitle}>AKTUELLE ERGEBNISSE</Text>
-                <LiveDot label="LIVE-DATEN" />
+                <Text style={styles.sectionTitle}>{resultsTitle}</Text>
+                {hasUpcoming ? <LiveDot label="LIVE-DATEN" /> : null}
               </View>
               <Text style={styles.actionMuted}>{team?.league}</Text>
             </View>
