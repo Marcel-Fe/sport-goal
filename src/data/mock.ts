@@ -381,9 +381,20 @@ export function getNews(id: string): NewsItem | undefined {
   return NEWS.find((n) => n.id === id);
 }
 
+/** Liegt ein "DD.MM."-Label heute oder in der Zukunft? (verhindert veraltete Termine) */
+function isUpcomingLabel(dateLabel: string): boolean {
+  const m = dateLabel.match(/^(\d{1,2})\.(\d{1,2})\./);
+  if (!m) return true; // unbekanntes Format → nicht ausblenden
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const ev = new Date(now.getFullYear(), Number(m[2]) - 1, Number(m[1]));
+  return ev.getTime() >= today.getTime();
+}
+
 /** Hero-Kacheln für ein Team: Nächstes Event (berechnet) + 3 aus TEAM_META. */
 export function heroTilesFor(teamId: string): HeroTile[] {
-  const next = EVENTS.find((e) => e.teamId === teamId);
+  // Nur echte, noch nicht gespielte Termine — keine veralteten Demo-Daten zeigen.
+  const next = EVENTS.find((e) => e.teamId === teamId && isUpcomingLabel(e.dateLabel));
   const team = getTeam(teamId);
   const opp = next?.opponentId ? getTeam(next.opponentId) : undefined;
   const nextTile: HeroTile = next
