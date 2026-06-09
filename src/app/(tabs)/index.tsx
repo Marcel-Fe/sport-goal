@@ -4,6 +4,7 @@ import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-na
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Frame from '@/components/Frame';
+import HeadlineCarousel from '@/components/HeadlineCarousel';
 import HeroCard from '@/components/HeroCard';
 import Ticker from '@/components/Ticker';
 import {
@@ -134,10 +135,6 @@ export default function Dashboard() {
       />
       <Frame>
       <AppHeader teamId={teamId} />
-      {/* Sportwelt-Ticker ganz oben (alle Sportarten, durchlaufend) */}
-      {worldNews.items && worldNews.items.length > 0 ? (
-        <Ticker items={worldNews.items} label="SPORT" />
-      ) : null}
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.searchBar}>
           <Text style={styles.searchIcon}>🔍</Text>
@@ -165,6 +162,11 @@ export default function Dashboard() {
           </View>
           <Text style={styles.shopChevron}>›</Text>
         </Pressable>
+
+        {/* Schlagzeilen der ganzen Sportwelt – durchklickbar (Bild-Stil) */}
+        {worldNews.items && worldNews.items.length > 0 ? (
+          <HeadlineCarousel items={worldNews.items} label="SCHLAGZEILEN" />
+        ) : null}
 
         {/* AKTUELLE ERGEBNISSE (echt) – sonst Demo-Live */}
         {results.length > 0 ? (
