@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Crest from '@/components/Crest';
+import Frame from '@/components/Frame';
 import { Chip } from '@/components/primitives';
 import { C, F, R, S } from '@/constants/tokens';
 import { ATHLETES, SPORTS, TEAMS, type Sport } from '@/data/teams';
@@ -47,6 +48,7 @@ export default function Onboarding() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+      <Frame>
       <View style={styles.header}>
         <Text style={styles.logo}>
           SPORT <Text style={{ color: C.accent }}>GOAL</Text>
@@ -137,6 +139,7 @@ export default function Onboarding() {
           <Text style={styles.nextText}>{step < 2 ? 'Weiter' : 'Fertig'}</Text>
         </Pressable>
       </View>
+      </Frame>
     </SafeAreaView>
   );
 }

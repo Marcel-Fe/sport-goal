@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Crest from '@/components/Crest';
+import Frame from '@/components/Frame';
 import { EventRow, NewsCompact, StandingsTable } from '@/components/cards';
 import { Card, SectionHeader } from '@/components/primitives';
 import { C, F, R, S } from '@/constants/tokens';
@@ -31,6 +32,7 @@ export default function TeamProfile() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <Frame>
       <View style={styles.topBar}>
         <Pressable onPress={() => router.back()} hitSlop={10}>
           <Ionicons name="chevron-back" size={26} color={C.text} />
@@ -91,6 +93,7 @@ export default function TeamProfile() {
           </View>
         )}
       </ScrollView>
+      </Frame>
     </SafeAreaView>
   );
 }

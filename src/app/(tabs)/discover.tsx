@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Crest from '@/components/Crest';
+import Frame from '@/components/Frame';
 import { Chip } from '@/components/primitives';
 import { C, F, R, S } from '@/constants/tokens';
 import { SPORTS, TEAMS, type Sport } from '@/data/teams';
@@ -14,6 +15,7 @@ export default function Discover() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <Frame>
       <Text style={styles.h1}>Entdecken</Text>
 
       <View style={styles.searchBar}>
@@ -48,6 +50,7 @@ export default function Discover() {
           </Pressable>
         ))}
       </ScrollView>
+      </Frame>
     </SafeAreaView>
   );
 }

@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import Frame from '@/components/Frame';
 import HeroCard from '@/components/HeroCard';
 import {
   EventRow,
@@ -120,6 +121,7 @@ export default function Dashboard() {
         style={styles.ambient}
         pointerEvents="none"
       />
+      <Frame>
       <AppHeader teamId={teamId} />
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.searchBar}>
@@ -331,6 +333,7 @@ export default function Dashboard() {
             : 'Prototyp · Beispiel-Daten (für diese Sportart noch keine Live-Quelle)'}
         </Text>
       </ScrollView>
+      </Frame>
     </SafeAreaView>
   );
 }

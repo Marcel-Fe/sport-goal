@@ -1,14 +1,35 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Crest from '@/components/Crest';
+import Frame from '@/components/Frame';
 import { Card } from '@/components/primitives';
 import { C, F, R, S } from '@/constants/tokens';
 import { SPORTS } from '@/data/teams';
 import { useFavorites } from '@/store/favorites';
+
+const APP_URL = 'https://marcel-fe.github.io/sport-goal/';
+
+async function shareApp() {
+  const msg = 'SPORT GOAL – mein persönliches Sport-Dashboard';
+  try {
+    if (Platform.OS === 'web') {
+      const nav: any = (globalThis as any).navigator;
+      if (nav?.share) await nav.share({ title: 'SPORT GOAL', text: msg, url: APP_URL });
+      else if (nav?.clipboard?.writeText) {
+        await nav.clipboard.writeText(APP_URL);
+        (globalThis as any).alert?.('Link kopiert:\n' + APP_URL);
+      } else (globalThis as any).alert?.(APP_URL);
+    } else {
+      await Share.share({ message: `${msg}: ${APP_URL}`, url: APP_URL });
+    }
+  } catch {
+    // Abbruch durch Nutzer – nichts tun
+  }
+}
 
 export default function More() {
   const { favorites, reset } = useFavorites();
@@ -22,8 +43,16 @@ export default function More() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <Frame>
       <Text style={styles.h1}>Mehr</Text>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        {/* Teilen */}
+        <Pressable style={styles.shareBtn} onPress={shareApp}>
+          <Ionicons name="share-social" size={20} color={C.text} />
+          <Text style={styles.shareText}>App teilen</Text>
+          <Ionicons name="chevron-forward" size={18} color={C.textDim} />
+        </Pressable>
+
         {/* Premium */}
         <LinearGradient
           colors={[C.accent, C.accentDark]}
@@ -75,6 +104,7 @@ export default function More() {
 
         <Text style={styles.footerNote}>SPORT GOAL · Prototyp v0.1 · Beispiel-Daten</Text>
       </ScrollView>
+      </Frame>
     </SafeAreaView>
   );
 }
@@ -117,6 +147,18 @@ const styles = StyleSheet.create({
     borderRadius: R.lg,
     padding: S.lg,
   },
+  shareBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: S.md,
+    backgroundColor: C.surface,
+    borderRadius: R.lg,
+    borderWidth: 1,
+    borderColor: C.border,
+    paddingHorizontal: S.lg,
+    paddingVertical: S.lg,
+  },
+  shareText: { flex: 1, color: C.text, fontSize: F.body, fontWeight: '800' },
   premiumTitle: { color: '#FFFFFF', fontSize: F.h3, fontWeight: '900' },
   premiumSub: { color: 'rgba(255,255,255,0.9)', fontSize: F.tiny, marginTop: 2 },
   sectionLabel: { color: C.textFaint, fontSize: F.tiny, fontWeight: '800', letterSpacing: 0.6, marginBottom: -S.sm },

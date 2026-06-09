@@ -2,6 +2,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { NewsCompact } from '@/components/cards';
+import Frame from '@/components/Frame';
 import { Card } from '@/components/primitives';
 import { C, F, S } from '@/constants/tokens';
 import { NEWS } from '@/data/mock';
@@ -17,6 +18,7 @@ export default function NewsTab() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <Frame>
       <Text style={styles.h1}>Meine News</Text>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <Card>
@@ -30,6 +32,7 @@ export default function NewsTab() {
           </View>
         </Card>
       </ScrollView>
+      </Frame>
     </SafeAreaView>
   );
 }

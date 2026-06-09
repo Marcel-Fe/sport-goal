@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Crest from '@/components/Crest';
+import Frame from '@/components/Frame';
 import { C, F, R, S } from '@/constants/tokens';
 import { getNews } from '@/data/mock';
 import { getTeam } from '@/data/teams';
@@ -27,6 +28,7 @@ export default function NewsDetail() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <Frame>
       <View style={styles.topBar}>
         <Pressable onPress={() => router.back()} hitSlop={10}>
           <Ionicons name="chevron-back" size={26} color={C.text} />
@@ -76,16 +78,15 @@ export default function NewsDetail() {
           <Text style={styles.aiBody}>{mode === 'short' ? item.aiShort : item.aiLong}</Text>
         </View>
 
-        {/* Original-Quelle (rechtlich sauber: verlinken statt kopieren) */}
-        <Pressable style={styles.sourceBtn}>
-          <Ionicons name="open-outline" size={18} color={C.text} />
-          <Text style={styles.sourceText}>Zur Originalquelle: {item.source}</Text>
-        </Pressable>
+        <View style={styles.sourceBtn}>
+          <Ionicons name="newspaper-outline" size={18} color={C.textDim} />
+          <Text style={styles.sourceText}>Quelle: {item.source}</Text>
+        </View>
         <Text style={styles.disclaimer}>
-          Diese Zusammenfassung wurde automatisch erstellt. Der vollständige Artikel ist bei der
-          Originalquelle verfügbar.
+          Diese Zusammenfassung wurde automatisch aus öffentlich verfügbaren Informationen erstellt.
         </Text>
       </ScrollView>
+      </Frame>
     </SafeAreaView>
   );
 }

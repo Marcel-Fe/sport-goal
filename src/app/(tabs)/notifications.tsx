@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import Frame from '@/components/Frame';
 import { Card } from '@/components/primitives';
 import { C, F, R, S } from '@/constants/tokens';
 
@@ -25,6 +26,7 @@ const NOTIFS: Notif[] = [
 export default function Notifications() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <Frame>
       <Text style={styles.h1}>Mitteilungen</Text>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <Card>
@@ -47,6 +49,7 @@ export default function Notifications() {
           </View>
         </Card>
       </ScrollView>
+      </Frame>
     </SafeAreaView>
   );
 }

@@ -15,10 +15,10 @@ function openUrl(url?: string) {
   if (url) Linking.openURL(url).catch(() => {});
 }
 
-// ------------------------------------------------------- Echte News (Schlagzeile + Link)
+// ------------------------------------------------------- Echte News (Schlagzeile, Anzeige)
 export function LiveNewsFeatured({ item, teamId }: { item: NewsHeadline; teamId: string }) {
   return (
-    <Pressable style={styles.newsFeatured} onPress={() => openUrl(item.link)}>
+    <View style={styles.newsFeatured}>
       <View style={styles.newsHero}>
         <Crest teamId={teamId} size={64} />
       </View>
@@ -27,14 +27,13 @@ export function LiveNewsFeatured({ item, teamId }: { item: NewsHeadline; teamId:
         <Text style={styles.newsAgo}>· {item.ago}</Text>
       </View>
       <Text style={styles.newsTitle} numberOfLines={3}>{item.title}</Text>
-      <Text style={styles.newsLink}>Zur Quelle ↗</Text>
-    </Pressable>
+    </View>
   );
 }
 
 export function LiveNewsRow({ item, teamId }: { item: NewsHeadline; teamId: string }) {
   return (
-    <Pressable style={styles.newsRow} onPress={() => openUrl(item.link)}>
+    <View style={styles.newsRow}>
       <Crest teamId={teamId} size={44} />
       <View style={{ flex: 1 }}>
         <View style={styles.newsSourceRow}>
@@ -43,7 +42,7 @@ export function LiveNewsRow({ item, teamId }: { item: NewsHeadline; teamId: stri
         </View>
         <Text style={styles.newsRowTitle} numberOfLines={3}>{item.title}</Text>
       </View>
-    </Pressable>
+    </View>
   );
 }
 
