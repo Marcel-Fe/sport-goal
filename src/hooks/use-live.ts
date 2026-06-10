@@ -2,6 +2,7 @@
  * Lädt echte Liga-Daten (Tabelle, letzte Ergebnisse, nächste Spiele) für eine Liga
  * und ein echtes Vereinslogo für ein Team. Mit Lade- und "live"-Status.
  */
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 
 import {
@@ -157,6 +158,32 @@ export function useFeed(id: string): { loading: boolean; items: NewsHeadline[] |
     };
   }, [id]);
   return state;
+}
+
+/**
+ * Stabile Form: nutzt die frische Live-Form, merkt sie sich aber persistent. Liefert
+ * die API mal keine Form (freier Key schwankt), bleibt die zuletzt bekannte erhalten.
+ */
+export function usePersistentForm(teamId: string | undefined, liveForm: string): string {
+  const [form, setForm] = useState(liveForm);
+  useEffect(() => {
+    let alive = true;
+    const key = 'form:' + (teamId ?? '');
+    if (liveForm && liveForm.length > 0) {
+      setForm(liveForm);
+      AsyncStorage.setItem(key, liveForm).catch(() => {});
+    } else if (teamId) {
+      AsyncStorage.getItem(key).then((v) => {
+        if (alive && v) setForm(v);
+      });
+    } else {
+      setForm('');
+    }
+    return () => {
+      alive = false;
+    };
+  }, [teamId, liveForm]);
+  return form;
 }
 
 export function useTeamBadge(teamId?: string): string | undefined {

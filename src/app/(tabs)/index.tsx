@@ -47,7 +47,7 @@ import { API_TEAM_NAME, deriveForm, sameTeam } from '@/data/live';
 import { badgeUrl } from '@/data/badges-static';
 import { shopUrl } from '@/data/shops';
 import { getTeam } from '@/data/teams';
-import { useClubNews, useFeed, useLiveLeague } from '@/hooks/use-live';
+import { useClubNews, useFeed, useLiveLeague, usePersistentForm } from '@/hooks/use-live';
 import { useFavorites } from '@/store/favorites';
 
 function AppHeader({ teamId }: { teamId?: string }) {
@@ -95,8 +95,8 @@ export default function Dashboard() {
   const mockStanding = standingsForLeague(team?.league).find((s) => s.teamId === teamId);
   const nextTile = heroTilesFor(teamId)[0];
   const clubColor = team?.colors?.[0] ?? C.accent;
-  // Form: echtes API-Feld, sonst aus den letzten echten Spielen berechnet.
-  const clubForm = liveRow?.form || deriveForm(liveData.past, apiName);
+  // Form: echtes API-Feld, sonst aus letzten Spielen berechnet – persistent gemerkt.
+  const clubForm = usePersistentForm(teamId, liveRow?.form || deriveForm(liveData.past, apiName));
 
   // Demo-Feeds nach Favoriten
   const news = byFavorites(NEWS, sports, teamIds);
