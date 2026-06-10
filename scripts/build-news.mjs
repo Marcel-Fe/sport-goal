@@ -41,11 +41,14 @@ function parse(xml) {
     if (!src && dash > 0) { src = title.slice(dash + 3); head = title.slice(0, dash); }
     out.push({ title: head, link, source: src || 'Quelle', pub: pubStr ? new Date(pubStr).getTime() : Date.now() });
   }
-  return out.slice(0, 10);
+  // neueste zuerst – damit Ticker/Karussell wirklich die aktuellsten Schlagzeilen zeigen
+  return out.sort((a, b) => b.pub - a.pub).slice(0, 10);
 }
 
-async function fetchFeed(q) {
-  const url = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=de&gl=DE&ceid=DE:de`;
+async function fetchFeed(qOrUrl) {
+  const url = qOrUrl.startsWith('http')
+    ? qOrUrl
+    : `https://news.google.com/rss/search?q=${encodeURIComponent(qOrUrl)}&hl=de&gl=DE&ceid=DE:de`;
   const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 SportGoalBot' } });
   return parse(await res.text());
 }
@@ -68,7 +71,8 @@ for (const [id, q] of Object.entries(QUERY)) {
 
 // Zusatz-Feeds: Sportwelt-Ticker (oben) + Transferticker
 const EXTRA = {
-  all: 'Sport Schlagzeilen',
+  // offizieller Google-News Sport-Themen-Feed → immer die frischesten Schlagzeilen
+  all: 'https://news.google.com/rss/headlines/section/topic/SPORTS?hl=de&gl=DE&ceid=DE:de',
   transfers: 'Fußball Transfer Gerücht',
 };
 for (const [id, q] of Object.entries(EXTRA)) {
