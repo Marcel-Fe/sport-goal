@@ -94,6 +94,7 @@ export default function Dashboard() {
   const worldNews = useFeed('all');
   const transferNews = useFeed('transfers');
   const favTransfers = useFavoritesTransfers(teamIds);
+  const teamLast = useTeamLast(teamId);
   const heroBadge = badgeUrl(teamId);
   const apiName = teamId ? API_TEAM_NAME[teamId] : undefined;
   const liveRow = liveData.table?.find((r) => sameTeam(r.name, apiName));
@@ -121,10 +122,17 @@ export default function Dashboard() {
   // Spielfreie Zeit (keine kommenden Spiele): ehrliches Label, kein Live-Punkt.
   const hasUpcoming = fixtures.length > 0;
   const resultsTitle = hasUpcoming ? 'AKTUELLE ERGEBNISSE' : 'LETZTE ERGEBNISSE';
-  // Highlights nur vom eigenen Verein (sonst fremde Liga-Spiele) – Fallback: Demo-Videos.
-  const teamResults = apiName
+  // Vereinsspezifische letzte Spiele: eigener Team-Endpoint + Liga-Past (gefiltert), dedupliziert.
+  const ligaTeamGames = apiName
     ? results.filter((m) => sameTeam(m.home ?? '', apiName) || sameTeam(m.away ?? '', apiName))
-    : results;
+    : [];
+  const seenIds = new Set<string>();
+  const teamResults = [...(teamLast ?? []), ...ligaTeamGames].filter((m) => {
+    if (seenIds.has(m.id)) return false;
+    seenIds.add(m.id);
+    return true;
+  });
+  // Highlights nur vom eigenen Verein (sonst fremde Liga-Spiele) – Fallback: Demo-Videos.
   const highlights = teamResults.filter((m) => m.video || m.thumb).slice(0, 8);
   const demoEvents = byFavorites(EVENTS, sports, teamIds).slice(0, 6);
 
@@ -201,18 +209,18 @@ export default function Dashboard() {
           <HeadlineCarousel items={worldNews.items} label="SCHLAGZEILEN" />
         ) : null}
 
-        {/* AKTUELLE ERGEBNISSE (echt) – sonst Demo-Live */}
-        {results.length > 0 ? (
+        {/* LETZTE ERGEBNISSE des eigenen Vereins (echt) – sonst Demo-Live */}
+        {teamResults.length > 0 ? (
           <View style={styles.section}>
             <View style={styles.liveHeader}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <Text style={styles.sectionTitle}>{resultsTitle}</Text>
                 {hasUpcoming ? <LiveDot label="LIVE-DATEN" /> : null}
               </View>
-              <Text style={styles.actionMuted}>{team?.league}</Text>
+              <Text style={styles.actionMuted}>{team?.name ?? team?.league}</Text>
             </View>
             <Card>
-              {results.slice(0, 6).map((m, i) => (
+              {teamResults.slice(0, 6).map((m, i) => (
                 <View key={m.id}>
                   {i > 0 ? <View style={styles.rowDivider} /> : null}
                   <LiveResultRow item={m} />

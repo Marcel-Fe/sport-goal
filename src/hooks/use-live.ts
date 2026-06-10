@@ -11,6 +11,7 @@ import {
   getPast,
   getTable,
   getTeamBadge,
+  getTeamLast,
   leagueSupported,
   type LiveMatch,
   type LiveStanding,
@@ -228,6 +229,25 @@ export function usePersistentForm(teamId: string | undefined, liveForm: string):
     };
   }, [teamId, liveForm]);
   return form;
+}
+
+/** Letzte echte Spiele eines Vereins (teamspezifisch, für "Letzte Ergebnisse"/Highlights). */
+export function useTeamLast(teamId?: string): LiveMatch[] | null {
+  const [items, setItems] = useState<LiveMatch[] | null>(null);
+  useEffect(() => {
+    let alive = true;
+    if (!teamId) {
+      setItems(null);
+      return;
+    }
+    getTeamLast(teamId).then((m) => {
+      if (alive) setItems(m);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [teamId]);
+  return items;
 }
 
 export function useTeamBadge(teamId?: string): string | undefined {

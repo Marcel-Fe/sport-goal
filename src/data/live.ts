@@ -10,6 +10,8 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { TEAM_DB_ID } from '@/data/team-ids';
+
 const KEY = '3'; // öffentlicher Test-Key (kostenlos)
 const BASE = `https://www.thesportsdb.com/api/v1/json/${KEY}`;
 const CACHE_TTL_MS = 15 * 60 * 1000; // 15 Min
@@ -171,6 +173,15 @@ export async function getNext(league: string): Promise<LiveMatch[] | null> {
   const data = await cached<{ events?: any[] }>(`${BASE}/eventsnextleague.php?id=${cfg.id}`);
   if (!data) return null;
   return mapEvents(data.events, false);
+}
+
+/** Letzte echte Spiele EINES Vereins (teamspezifisch). Key "results", nicht "events". */
+export async function getTeamLast(teamId: string): Promise<LiveMatch[] | null> {
+  const dbId = TEAM_DB_ID[teamId];
+  if (!dbId) return null;
+  const data = await cached<{ results?: any[] }>(`${BASE}/eventslast.php?id=${dbId}`);
+  if (!data?.results?.length) return null;
+  return mapEvents(data.results, true);
 }
 
 /**
