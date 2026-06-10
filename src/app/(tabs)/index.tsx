@@ -7,7 +7,6 @@ import Frame from '@/components/Frame';
 import ClubBento from '@/components/ClubBento';
 import HeadlineCarousel from '@/components/HeadlineCarousel';
 import HeroCard from '@/components/HeroCard';
-import Ticker from '@/components/Ticker';
 import {
   EventRow,
   LiveRow,
@@ -351,16 +350,25 @@ export default function Dashboard() {
           </View>
         ) : null}
 
-        {/* TRANSFERGERÜCHTE – Favoriten zuerst, sonst allgemein, sonst Demo */}
+        {/* TRANSFERGERÜCHTE – Liste (Favoriten zuerst, sonst allgemein, sonst Demo) */}
         {tickerTransfers ? (
           <View style={styles.section}>
             <SectionHeader
-              title={favTx ? `TRANSFERS · ${team?.name ?? ''}` : 'TRANSFERGERÜCHTE'}
+              title={favTx ? `TRANSFERGERÜCHTE · ${team?.name ?? ''}` : 'TRANSFERGERÜCHTE'}
               actionLabel={null}
             />
-            <View style={styles.tickerBox}>
-              <Ticker items={tickerTransfers} label="TRANSFERS" />
-            </View>
+            <Card>
+              <View style={{ gap: S.lg }}>
+                {tickerTransfers.slice(0, 8).map((it, i) => (
+                  <View key={i}>
+                    {i > 0 ? <View style={styles.rowDivider} /> : null}
+                    <View style={{ paddingTop: i > 0 ? S.md : 0 }}>
+                      <LiveNewsRow item={it} teamId={(it as { teamId?: string }).teamId ?? ''} />
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </Card>
           </View>
         ) : cfg.showTransfers && transfers.length > 0 ? (
           <View style={styles.section}>
@@ -489,7 +497,6 @@ const styles = StyleSheet.create({
   shopTitle: { color: C.text, fontSize: F.body, fontWeight: '800' },
   shopSub: { color: C.textFaint, fontSize: F.small, marginTop: 1 },
   shopChevron: { color: C.textDim, fontSize: 22, fontWeight: '800' },
-  tickerBox: { borderRadius: R.md, overflow: 'hidden', borderWidth: 1, borderColor: C.border },
   section: { gap: 0 },
   sectionTitle: { color: C.text, fontSize: F.h3, fontWeight: '800', letterSpacing: 0.2 },
   liveHeader: {
