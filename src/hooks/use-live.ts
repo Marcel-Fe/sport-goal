@@ -140,6 +140,50 @@ export function useFavoritesNews(
   return state;
 }
 
+/** Erkennt Transfer-/Wechsel-Schlagzeilen (DE + EN). */
+const TRANSFER_RE =
+  /transfer|wechsel|ger[üu]cht|verpflicht|abl[öo]se|leihe|deal|vertrag|interesse|poker|abgang|zugang|verkauf|holt|trade[ds]?|sign(s|ing|ed)?/i;
+
+/**
+ * Wie useFavoritesNews, aber nur Transfer-/Wechsel-Schlagzeilen der Favoriten.
+ * Nutzt die vorhandenen Vereins-Feeds (kein extra Cron). Fallback = null.
+ */
+export function useFavoritesTransfers(
+  teamIds: string[],
+): { loading: boolean; items: FavNewsItem[] | null } {
+  const [state, setState] = useState<{ loading: boolean; items: FavNewsItem[] | null }>({
+    loading: false,
+    items: null,
+  });
+  const key = teamIds.join(',');
+  useEffect(() => {
+    let alive = true;
+    if (!teamIds.length) {
+      setState({ loading: false, items: null });
+      return;
+    }
+    setState({ loading: true, items: null });
+    (async () => {
+      const lists = await Promise.all(
+        teamIds.map(async (id) => {
+          const items = await fetchClubNews(getTeam(id)?.name ?? '', id);
+          return (items ?? [])
+            .filter((it) => TRANSFER_RE.test(it.title))
+            .map((it) => ({ ...it, teamId: id }));
+        }),
+      );
+      if (!alive) return;
+      const merged = lists.flat().sort((a, b) => b.pub - a.pub);
+      setState({ loading: false, items: merged.length ? merged : null });
+    })();
+    return () => {
+      alive = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+  return state;
+}
+
 import { fetchFeed } from '@/data/news';
 
 /** Lädt einen festen, same-origin Feed nach id (z. B. 'all', 'transfers'). */

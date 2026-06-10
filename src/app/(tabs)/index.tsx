@@ -47,7 +47,13 @@ import { API_TEAM_NAME, deriveForm, sameTeam } from '@/data/live';
 import { badgeUrl } from '@/data/badges-static';
 import { shopUrl } from '@/data/shops';
 import { getTeam } from '@/data/teams';
-import { useClubNews, useFeed, useLiveLeague, usePersistentForm } from '@/hooks/use-live';
+import {
+  useClubNews,
+  useFavoritesTransfers,
+  useFeed,
+  useLiveLeague,
+  usePersistentForm,
+} from '@/hooks/use-live';
 import { useFavorites } from '@/store/favorites';
 
 function AppHeader({ teamId }: { teamId?: string }) {
@@ -87,6 +93,7 @@ export default function Dashboard() {
   const clubNews = useClubNews(teamId, team?.name);
   const worldNews = useFeed('all');
   const transferNews = useFeed('transfers');
+  const favTransfers = useFavoritesTransfers(teamIds);
   const heroBadge = badgeUrl(teamId);
   const apiName = teamId ? API_TEAM_NAME[teamId] : undefined;
   const liveRow = liveData.table?.find((r) => sameTeam(r.name, apiName));
@@ -97,6 +104,10 @@ export default function Dashboard() {
   const clubColor = team?.colors?.[0] ?? C.accent;
   // Form: echtes API-Feld, sonst aus letzten Spielen berechnet – persistent gemerkt.
   const clubForm = usePersistentForm(teamId, liveRow?.form || deriveForm(liveData.past, apiName));
+
+  // Transferticker: Gerüchte der Favoriten zuerst, sonst allgemeiner Feed.
+  const favTx = favTransfers.items?.length ? favTransfers.items : null;
+  const tickerTransfers = favTx ?? (transferNews.items?.length ? transferNews.items : null);
 
   // Demo-Feeds nach Favoriten
   const news = byFavorites(NEWS, sports, teamIds);
@@ -331,12 +342,15 @@ export default function Dashboard() {
           </View>
         ) : null}
 
-        {/* TRANSFERGERÜCHTE – echter Ticker (sonst Demo-Liste) */}
-        {transferNews.items && transferNews.items.length > 0 ? (
+        {/* TRANSFERGERÜCHTE – Favoriten zuerst, sonst allgemein, sonst Demo */}
+        {tickerTransfers ? (
           <View style={styles.section}>
-            <SectionHeader title="TRANSFERGERÜCHTE" actionLabel={null} />
+            <SectionHeader
+              title={favTx ? `TRANSFERS · ${team?.name ?? ''}` : 'TRANSFERGERÜCHTE'}
+              actionLabel={null}
+            />
             <View style={styles.tickerBox}>
-              <Ticker items={transferNews.items} label="TRANSFERS" />
+              <Ticker items={tickerTransfers} label="TRANSFERS" />
             </View>
           </View>
         ) : cfg.showTransfers && transfers.length > 0 ? (
